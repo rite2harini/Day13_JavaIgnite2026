@@ -1,24 +1,72 @@
-/*
-Create a Java program connected to database library_db.
+CREATE DATABASE library_db;
 
-Table:
+USE library_db;
 
-book_id
-title
-available_copies
-Task:
-Allow user to input a book ID
-Check availability
-If available:
-Reduce copy count by 1
-Print “Book Issued”
-Else:
-Print “Not Available”
-Hint:
+CREATE TABLE books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(100),
+    available_copies INT
+);
 
-Think:
+INSERT INTO books VALUES
+(101,'Java Programming',5),
+(102,'Python Basics',0),
+(103,'Database Systems',3);
+import java.sql.*;
+import java.util.Scanner;
 
-SELECT → check condition
-UPDATE → modify data
-Use if-else inside Java after ResultSet
-*/
+public class LibraryBorrowSystem {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter Book ID: ");
+        int bookId = sc.nextInt();
+
+        String url = "jdbc:mysql://localhost:3306/library_db";
+        String user = "root";
+        String password = "root";
+
+        try {
+            Connection con = DriverManager.getConnection(url, user, password);
+
+            String selectQuery =
+                    "SELECT available_copies FROM books WHERE book_id=?";
+
+            PreparedStatement ps = con.prepareStatement(selectQuery);
+            ps.setInt(1, bookId);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                int copies = rs.getInt("available_copies");
+
+                if (copies > 0) {
+
+                    String updateQuery =
+                            "UPDATE books SET available_copies = available_copies - 1 WHERE book_id=?";
+
+                    PreparedStatement ps2 =
+                            con.prepareStatement(updateQuery);
+
+                    ps2.setInt(1, bookId);
+
+                    ps2.executeUpdate();
+
+                    System.out.println("Book Issued");
+                } else {
+                    System.out.println("Not Available");
+                }
+
+            } else {
+                System.out.println("Book ID not found");
+            }
+
+            con.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
