@@ -1,21 +1,73 @@
-/*
-Create a Java program to simulate a bank system with a shared account balance.
+import java.util.Random;
 
-Task:
-Initial account balance = 10,000
-Create two threads:
-Thread 1 → performs 5 withdrawals (random amounts between 500–2000)
-Thread 2 → performs 5 deposits (random amounts between 500–2000)
-Requirements:
-Both threads should operate on the same account balance
-Print updated balance after every transaction
-Ensure balance never goes negative
-Hint:
+class BankAccount {
+    private int balance = 10000;
 
-Think step-by-step:
+    public synchronized void deposit(int amount) {
+        balance += amount;
+        System.out.println(Thread.currentThread().getName()
+                + " Deposited: " + amount
+                + " | Balance: " + balance);
+    }
 
-Shared resource = balance variable
-Use synchronization concept (important idea: avoid race condition)
-Each thread modifies same data
-Control access carefully
-*/
+    public synchronized void withdraw(int amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            System.out.println(Thread.currentThread().getName()
+                    + " Withdrawn: " + amount
+                    + " | Balance: " + balance);
+        } else {
+            System.out.println(Thread.currentThread().getName()
+                    + " Cannot withdraw " + amount
+                    + " | Insufficient Balance: " + balance);
+        }
+    }
+}
+
+class WithdrawThread extends Thread {
+    BankAccount account;
+    Random random = new Random();
+
+    WithdrawThread(BankAccount account) {
+        this.account = account;
+    }
+
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            int amount = random.nextInt(1501) + 500;
+            account.withdraw(amount);
+        }
+    }
+}
+
+class DepositThread extends Thread {
+    BankAccount account;
+    Random random = new Random();
+
+    DepositThread(BankAccount account) {
+        this.account = account;
+    }
+
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            int amount = random.nextInt(1501) + 500;
+            account.deposit(amount);
+        }
+    }
+}
+
+public class BankingTransactionSimulation {
+    public static void main(String[] args) {
+
+        BankAccount account = new BankAccount();
+
+        WithdrawThread t1 = new WithdrawThread(account);
+        DepositThread t2 = new DepositThread(account);
+
+        t1.setName("WithdrawThread");
+        t2.setName("DepositThread");
+
+        t1.start();
+        t2.start();
+    }
+}
