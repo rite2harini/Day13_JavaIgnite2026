@@ -1,20 +1,71 @@
-/*
-Create a Java program that connects to a MySQL database college_db.
+CREATE DATABASE college_db;
 
-The table students contains:
+USE college_db;
 
-id
-name
-marks
-Task:
-Fetch all student records
-Display only students who scored above average marks
-Also print total number of students processed
-Hint:
+CREATE TABLE students (
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    marks INT
+);
 
-Think in steps:
+INSERT INTO students VALUES
+(1,'Amit',80),
+(2,'Riya',90),
+(3,'Rahul',70),
+(4,'Sneha',95),
+(5,'Ankit',75);
+import java.sql.*;
 
-Fetch all data using ResultSet
-First calculate average marks
-Then filter while reading result
-*/
+public class StudentDatabaseReportSystem {
+    public static void main(String[] args) {
+
+        String url = "jdbc:mysql://localhost:3306/college_db";
+        String user = "root";
+        String password = "root";
+
+        try {
+            Connection con =
+                    DriverManager.getConnection(url, user, password);
+
+            // Calculate average marks
+            String avgQuery = "SELECT AVG(marks) AS avg_marks FROM students";
+            Statement st = con.createStatement();
+            ResultSet rs1 = st.executeQuery(avgQuery);
+
+            double avgMarks = 0;
+
+            if (rs1.next()) {
+                avgMarks = rs1.getDouble("avg_marks");
+            }
+
+            System.out.println("Average Marks = " + avgMarks);
+            System.out.println("\nStudents scoring above average:");
+
+            // Fetch all students
+            String query = "SELECT * FROM students";
+            ResultSet rs2 = st.executeQuery(query);
+
+            int count = 0;
+
+            while (rs2.next()) {
+                int id = rs2.getInt("id");
+                String name = rs2.getString("name");
+                int marks = rs2.getInt("marks");
+
+                count++;
+
+                if (marks > avgMarks) {
+                    System.out.println(
+                            id + " " + name + " " + marks);
+                }
+            }
+
+            System.out.println("\nTotal Students Processed = " + count);
+
+            con.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
