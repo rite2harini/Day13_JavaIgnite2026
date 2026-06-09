@@ -1,17 +1,16 @@
-/*
-Create a program with 3 threads:
+public class MultiThreadProgram {
+	  public static void main(String[] args) {
 
-Thread 1 → prints numbers 1–5
-Thread 2 → prints even numbers 2–10
-Thread 3 → prints odd numbers 1–9
-Task:
-Ensure all threads run independently
-Print thread name with each output
-Hint:
+	        Thread1 t1 = new Thread1();
+	        Thread2 t2 = new Thread2();
+	        Thread3 t3 = new Thread3();
 
-Think:
+	        t1.setName("Number Thread");
+	        t2.setName("Even Thread");
+	        t3.setName("Odd Thread");
 
-Each thread = separate class OR Runnable
-Use run() method logic
-Focus on parallel execution behavior
-*/
+	        t1.start();
+	        t2.start();
+	        t3.start();
+	    }
+	}

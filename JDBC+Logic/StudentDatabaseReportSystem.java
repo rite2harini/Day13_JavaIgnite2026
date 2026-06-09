@@ -1,20 +1,57 @@
-/*
-Create a Java program that connects to a MySQL database college_db.
+public class AboveAverageStudents {
 
-The table students contains:
+	    public static void main(String[] args) {
 
-id
-name
-marks
-Task:
-Fetch all student records
-Display only students who scored above average marks
-Also print total number of students processed
-Hint:
+	        String url = "jdbc:mysql://localhost:3306/college_db";
+	        String user = "root";
+	        String password = "your_password";
 
-Think in steps:
+	        try {
+	            Class.forName("com.mysql.cj.jdbc.Driver");
 
-Fetch all data using ResultSet
-First calculate average marks
-Then filter while reading result
-*/
+	            Connection con = DriverManager.getConnection(url, user, password);
+
+	            // Step 1: Calculate average marks
+	            String avgQuery = "SELECT AVG(marks) FROM students";
+	            Statement st1 = con.createStatement();
+	            ResultSet avgRs = st1.executeQuery(avgQuery);
+
+	            double average = 0;
+
+	            if (avgRs.next()) {
+	                average = avgRs.getDouble(1);
+	            }
+
+	            System.out.println("Average Marks: " + average);
+
+	            // Step 2: Fetch students above average
+	            String studentQuery = "SELECT * FROM students";
+	            Statement st2 = con.createStatement();
+	            ResultSet rs = st2.executeQuery(studentQuery);
+
+	            int totalStudents = 0;
+
+	            System.out.println("\nStudents Scored Above Average:");
+
+	            while (rs.next()) {
+	                totalStudents++;
+
+	                int id = rs.getInt("id");
+	                String name = rs.getString("name");
+	                double marks = rs.getDouble("marks");
+
+	                if (marks > average) {
+	                    System.out.println(id + " " + name + " " + marks);
+	                }
+	            }
+
+	            System.out.println("\nTotal Students Processed: " + totalStudents);
+
+	            con.close();
+
+	        } catch (Exception e) {
+	            System.out.println("Error: " + e);
+	        }
+	    }
+	}
+
