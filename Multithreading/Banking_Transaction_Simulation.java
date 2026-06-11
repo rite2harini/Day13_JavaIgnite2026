@@ -19,3 +19,75 @@ Use synchronization concept (important idea: avoid race condition)
 Each thread modifies same data
 Control access carefully
 */
+import java.util.Random;
+
+class BankAccount {
+    private int balance = 10000;
+
+    public synchronized void withdraw(int amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            System.out.println(Thread.currentThread().getName()
+                    + " Withdraw: " + amount
+                    + " | Balance: " + balance);
+        } else {
+            System.out.println(Thread.currentThread().getName()
+                    + " Withdraw Failed: " + amount
+                    + " | Balance: " + balance);
+        }
+    }
+
+    public synchronized void deposit(int amount) {
+        balance += amount;
+        System.out.println(Thread.currentThread().getName()
+                + " Deposit: " + amount
+                + " | Balance: " + balance);
+    }
+}
+
+class WithdrawThread extends Thread {
+    BankAccount account;
+    Random random = new Random();
+
+    WithdrawThread(BankAccount account) {
+        this.account = account;
+    }
+
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            int amount = random.nextInt(1501) + 500;
+            account.withdraw(amount);
+        }
+    }
+}
+
+class DepositThread extends Thread {
+    BankAccount account;
+    Random random = new Random();
+
+    DepositThread(BankAccount account) {
+        this.account = account;
+    }
+
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            int amount = random.nextInt(1501) + 500;
+            account.deposit(amount);
+        }
+    }
+}
+
+public class BankSystem {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount();
+
+        WithdrawThread t1 = new WithdrawThread(account);
+        DepositThread t2 = new DepositThread(account);
+
+        t1.setName("Thread-1");
+        t2.setName("Thread-2");
+
+        t1.start();
+        t2.start();
+    }
+}
