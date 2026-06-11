@@ -47,3 +47,64 @@ double =(double)sum/marksList.size();
 
 Finally compare averages
   */
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+class Student {
+    String name;
+    String course;
+    int marks;
+
+    Student(String name, String course, int marks) {
+        this.name = name;
+        this.course = course;
+        this.marks = marks;
+    }
+}
+
+public class Performance_Analyzer {
+    public static void main(String[] args) {
+
+        ArrayList<Student> list = new ArrayList<>();
+        list.add(new Student("Ritesh", "Math", 85));
+        list.add(new Student("Vishwash", "Math", 90));
+        list.add(new Student("Biswas", "Science", 70));
+        list.add(new Student("Rohit", "Science", 80));
+        list.add(new Student("Binayak", "English", 60));
+        list.add(new Student("Aryan", "English", 75));
+        list.add(new Student("Sachi", "Math", 78));
+        HashMap<String, List<Integer>> courseMarks = new HashMap<>();
+        for (Student s : list) {
+            if (!courseMarks.containsKey(s.course)) {
+                courseMarks.put(s.course, new ArrayList<>());
+            }
+            courseMarks.get(s.course).add(s.marks);
+        }
+        HashMap<String, Double> avgMap = new HashMap<>();
+        for (String course : courseMarks.keySet()) {
+            List<Integer> marks = courseMarks.get(course);
+            int sum = 0;
+            for (int m : marks) {
+                sum += m;
+            }
+            double avg = (double) sum / marks.size();
+            avgMap.put(course, avg);
+        }
+        System.out.println("Course averages:");
+        for (String course : avgMap.keySet()) {
+            System.out.println(course + " -> " + avgMap.get(course));
+        }
+        String topCourse = "";
+        double max = 0;
+        for (String course : avgMap.keySet()) {
+            if (avgMap.get(course) > max) {
+                max = avgMap.get(course);
+                topCourse = course;
+            }
+        }
+
+        System.out.println("\nTop course: " + topCourse + " (" + max + ")");
+    }
+}
