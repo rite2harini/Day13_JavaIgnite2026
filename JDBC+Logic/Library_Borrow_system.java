@@ -22,3 +22,69 @@ SELECT → check condition
 UPDATE → modify data
 Use if-else inside Java after ResultSet
 */
+import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class Library_Borrow_system {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        String url      = "jdbc:mysql://localhost:3306/library_db";
+        String username = "root";
+        String password = "your_password";
+
+        try {
+
+            Connection con = DriverManager.getConnection(url, username, password);
+            System.out.println("Connected to database!");
+
+            System.out.print("Enter Book ID to borrow: ");
+            int bookId = sc.nextInt();
+
+            String selectQuery = "SELECT * FROM books WHERE book_id = ?";
+            PreparedStatement selectStmt = con.prepareStatement(selectQuery);
+            selectStmt.setInt(1, bookId);
+
+            ResultSet rs = selectStmt.executeQuery();
+
+            if (rs.next()) {
+
+                String title   = rs.getString("title");
+                int copies     = rs.getInt("available_copies");
+
+                System.out.println("Book Found: " + title);
+                System.out.println("Available Copies: " + copies);
+
+                if (copies > 0) {
+
+                    String updateQuery = "UPDATE books SET available_copies = available_copies - 1 WHERE book_id = ?";
+                    PreparedStatement updateStmt = con.prepareStatement(updateQuery);
+                    updateStmt.setInt(1, bookId);
+                    updateStmt.executeUpdate();
+
+                    System.out.println("Book Issued Successfully!");
+
+                } else {
+
+                    System.out.println("Not Available");
+
+                }
+
+            } else {
+                System.out.println("No book found with ID: " + bookId);
+            }
+
+            
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        sc.close();
+    }
+}
