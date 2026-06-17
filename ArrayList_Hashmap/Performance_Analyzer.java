@@ -1,49 +1,75 @@
-/*
-Create a Java program to manage student course performance.
+package JAVA_DAY_13;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-Task:
+class Students {
+    String studentName;
+    String courseName;
+    int marks;
 
-You are given multiple students with the following details:
+    Students(String studentName, String courseName, int marks) {
+        this.studentName = studentName;
+        this.courseName = courseName;
+        this.marks = marks;
+    }
+}
 
-Student Name
-Course Name
-Marks
-Requirements:
-Store all student records using ArrayList
-Use a HashMap<String, List<Integer>> where:
-Key = Course Name
-Value = List of marks in that course
-Calculate and display:
-Average marks for each course
-Course with highest average
-Hint:
+public class PERFORMANCES_ANALYZER {
 
-Break the problem into steps:
+    public static void main(String[] args) {
+    	// TODO Auto-generated method stub
+        ArrayList<Students> students = new ArrayList<>();
 
-First store raw data in ArrayList
-Then group marks by course using HashMap
+        students.add(new Students("STWATRA", "Java", 95));
+        students.add(new Students("SUBHENDU", "Java", 80));
+        students.add(new Students("HRUSHIKESH", "Python", 75));
+        students.add(new Students("SREETI", "Python", 65));
+        students.add(new Students("BALDEV", "Data Structure", 90));
+        students.add(new Students("ARPITA", "Data Structure", 80));
 
-for each loop - enhanced for loop 
-for(int i=0;i<list.size();i++)
-Student s=list.get(i)
+        HashMap<String, List<Integer>> courseMarks = new HashMap<>();
 
-for(Student s : list)
-String course = s.course 
-int marks = s.marks 
-if(map.containsKey(course))
-ArrayList<Integer> marksList = map.get(course)
-marksList.add(marks)
+        for (Students s : students) {
 
-ArrayList<Integer> marksList = map.get(course)
-marksList.add(marks)
-map.put(course,marksList)
+            if (!courseMarks.containsKey(s.courseName)) {
+                courseMarks.put(s.courseName, new ArrayList<Integer>());
+            }
 
+            courseMarks.get(s.courseName).add(s.marks);
+        }
+        HashMap<String, Double> courseAverage = new HashMap<>();
 
-Then iterate HashMap to calculate averages - for(String course:map.keySet())- creating arraylist -int sum =0, 
-for(int i=0;i<marksList.size();i++)
-sum=sum+marksList(i)
-double =(double)sum/marksList.size();
+        System.out.println("Average Marks by Course:");
 
+        for (String course : courseMarks.keySet()) {
 
-Finally compare averages
-  */
+            List<Integer> marksList = courseMarks.get(course);
+
+            int sum = 0;
+
+            for (int mark : marksList) {
+                sum += mark;
+            }
+
+            double average = (double) sum / marksList.size();
+
+            courseAverage.put(course, average);
+
+            System.out.println(course + " -> " + average);
+        }
+        String highestCourse = "";
+        double highestAverage = 0;
+
+        for (String course : courseAverage.keySet()) {
+
+            if (courseAverage.get(course) > highestAverage) {
+                highestAverage = courseAverage.get(course);
+                highestCourse = course;
+            }
+        }
+
+        System.out.println("\nCourse with Highest Average:");
+        System.out.println(highestCourse + " -> " + highestAverage);
+    }
+}
